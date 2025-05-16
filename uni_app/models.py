@@ -33,18 +33,29 @@ class Professor(models.Model):
 
 class Course(models.Model):
     """
-    Repräsentiert einen Kurs, der von einem Professor unterrichtet und in einem bestimmten Semester angeboten wird.
+    Repräsentiert einen Kurs, der von einem Professor unterrichtet und in einem bestimmten
+    Semester angeboten wird.
 
     Felder:
     - name: Der Name des Kurses.
     - description: Eine textuelle Beschreibung des Kurses.
     - semester: Das Semester, in dem der Kurs stattfindet.
     - professor: Der Professor, der den Kurs unterrichtet.
+        - on_delete=models.SET_NULL: Wenn der Professor gelöscht wird, wird der Wert im Feld
+          professor auf NULL gesetzt (also kein Professor mehr zugeordnet).
+            - null=True: Erlaubt NULL-Werte in der Datenbank.
+            - blank=True: Erlaubt leere Eingaben in Forms oder im Admin.
     """
     name = models.CharField(max_length=255)
     description = models.TextField()
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, related_name="courses")
-    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="courses")
+    professor = models.ForeignKey(
+        Professor,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="courses"
+    )
 
     def __str__(self):
         return self.name
